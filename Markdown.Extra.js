@@ -1,4 +1,4 @@
-(function () {
+(function (root) {
   // A quick way to make sure we're only keeping span-level tags when we need to.
   // This isn't supposed to be foolproof. It's just a quick way to make sure we
   // keep all span-level tags returned by a pagedown converter. It should allow
@@ -134,7 +134,7 @@
    * Markdown.Extra *
    ****************************************************************************/
 
-  Markdown.Extra = function() {
+  var Markdown_Extra = function() {
     // For converting internal markdown (in tables for instance).
     // This is necessary since these methods are meant to be called as
     // preConversion hooks, and the Markdown converter passed to init()
@@ -162,10 +162,10 @@
     this.tabWidth = 4;
   };
 
-  Markdown.Extra.init = function(converter, options) {
-    // Each call to init creates a new instance of Markdown.Extra so it's
+  Markdown_Extra.init = function(converter, options) {
+    // Each call to init creates a new instance of Markdown_Extra so it's
     // safe to have multiple converters, with different options, on a single page
-    var extra = new Markdown.Extra();
+    var extra = new Markdown_Extra();
     var postNormalizationTransformations = [];
     var preBlockGamutTransformations = [];
     var postConversionTransformations = ["unHashExtraBlocks"];
@@ -238,7 +238,7 @@
   };
 
   // Do transformations
-  Markdown.Extra.prototype.doTransform = function(transformations, text) {
+  Markdown_Extra.prototype.doTransform = function(transformations, text) {
     for(var i = 0; i < transformations.length; i++)
       text = this[transformations[i]](text);
     return text;
@@ -246,16 +246,16 @@
 
   // Return a placeholder containing a key, which is the block's index in the
   // hashBlocks array. We wrap our output in a <p> tag here so Pagedown won't.
-  Markdown.Extra.prototype.hashExtraBlock = function(block) {
+  Markdown_Extra.prototype.hashExtraBlock = function(block) {
     return '\n<p>~X' + (this.hashBlocks.push(block) - 1) + 'X</p>\n';
   };
-  Markdown.Extra.prototype.hashExtraInline = function(block) {
+  Markdown_Extra.prototype.hashExtraInline = function(block) {
     return '~X' + (this.hashBlocks.push(block) - 1) + 'X';
   };
   
   // Replace placeholder blocks in `text` with their corresponding
   // html blocks in the hashBlocks array.
-  Markdown.Extra.prototype.unHashExtraBlocks = function(text) {
+  Markdown_Extra.prototype.unHashExtraBlocks = function(text) {
     var self = this;
     function recursiveUnHash() {
       var hasHash = false;
@@ -273,7 +273,7 @@
   };
   
   // Wrap headers to make sure they won't be in def lists
-  Markdown.Extra.prototype.wrapHeaders = function(text) {
+  Markdown_Extra.prototype.wrapHeaders = function(text) {
     function wrap(text) {
       return '\n' + text + '\n';
     }
@@ -290,7 +290,7 @@
 
   // Extract headers attribute blocks, move them above the element they will be
   // applied to, and hash them for later.
-  Markdown.Extra.prototype.hashHeaderAttributeBlocks = function(text) {
+  Markdown_Extra.prototype.hashHeaderAttributeBlocks = function(text) {
     // TODO: use sentinels. Should we just add/remove them in doConversion?
     // TODO: better matches for id / class attributes
     var attrBlock = "\\{\\s*[.|#][^}]+\\}";
@@ -310,7 +310,7 @@
   
   // Extract FCB attribute blocks, move them above the element they will be
   // applied to, and hash them for later.
-  Markdown.Extra.prototype.hashFcbAttributeBlocks = function(text) {
+  Markdown_Extra.prototype.hashFcbAttributeBlocks = function(text) {
     // TODO: use sentinels. Should we just add/remove them in doConversion?
     // TODO: better matches for id / class attributes
     var attrBlock = "\\{\\s*[.|#][^}]+\\}";
@@ -325,7 +325,7 @@
     return text.replace(fcbAttributes, attributeCallback);
   };
 
-  Markdown.Extra.prototype.applyAttributeBlocks = function(text) {
+  Markdown_Extra.prototype.applyAttributeBlocks = function(text) {
     var self = this;
     var blockRe = new RegExp('<p>~XX(\\d+)XX</p>[\\s]*' +
                              '(?:<(h[1-6]|pre)(?: +class="(\\S+)")?(>[\\s\\S]*?</\\2>))', "gm");
@@ -364,7 +364,7 @@
    *****************************************************************/
 
   // Find and convert Markdown Extra tables into html.
-  Markdown.Extra.prototype.tables = function(text) {
+  Markdown_Extra.prototype.tables = function(text) {
     var self = this;
 
     var leadingPipe = new RegExp(
@@ -480,7 +480,7 @@
    *****************************************************************/
   
   // Strip footnote, store in hashes.
-  Markdown.Extra.prototype.stripFootnoteDefinitions = function(text) {
+  Markdown_Extra.prototype.stripFootnoteDefinitions = function(text) {
     var self = this;
 
     text = text.replace(
@@ -498,7 +498,7 @@
   
 
   // Find and convert footnotes references.
-  Markdown.Extra.prototype.doFootnotes = function(text) {
+  Markdown_Extra.prototype.doFootnotes = function(text) {
     var self = this;
     if(self.isConvertingFootnote === true) {
       return text;
@@ -523,7 +523,7 @@
   };
 
   // Print footnotes at the end of the document
-  Markdown.Extra.prototype.printFootnotes = function(text) {
+  Markdown_Extra.prototype.printFootnotes = function(text) {
     var self = this;
 
     if (self.usedFootnotes.length === 0) {
@@ -555,7 +555,7 @@
   ******************************************************************/
 
   // Find and convert gfm-inspired fenced code blocks into html.
-  Markdown.Extra.prototype.fencedCodeBlocks = function(text) {
+  Markdown_Extra.prototype.fencedCodeBlocks = function(text) {
     function encodeCode(code) {
       code = code.replace(/&/g, "&amp;");
       code = code.replace(/</g, "&lt;");
@@ -649,7 +649,7 @@
   }
 
   // Find and convert markdown extra definition lists into html.
-  Markdown.Extra.prototype.runSmartyPants = function(text) {
+  Markdown_Extra.prototype.runSmartyPants = function(text) {
     text = text.replace(/(<)([a-zA-Z1-6]+)([^\n>]*?)(>)(.*?)(<\/\2>)/gm, educatePants);
     //clean everything inside html tags
     text = text.replace(/(<([a-zA-Z1-6]+)\b([^\n>]*?)(\/)?>)/g, revertPants);
@@ -663,7 +663,7 @@
   ******************************************************************/
 
   // Find and convert markdown extra definition lists into html.
-  Markdown.Extra.prototype.definitionLists = function(text) {
+  Markdown_Extra.prototype.definitionLists = function(text) {
     var wholeList = new RegExp(
       ['(\\x02\\n?|\\n\\n)'          ,
        '(?:'                         ,
@@ -712,7 +712,7 @@
 
   // Process the contents of a single definition list, splitting it
   // into individual term and definition list items.
-  Markdown.Extra.prototype.processDefListItems = function(listStr) {
+  Markdown_Extra.prototype.processDefListItems = function(listStr) {
     var self = this;
 
     var dt = new RegExp(
@@ -783,5 +783,26 @@
     return removeAnchors(listStr);
   };
 
-})();
+  //
+  // This is based on snippets from
+  // https://github.com/umdjs/umd/blob/master/returnExports.js :
+  //
+  function universalExporting(root, factory) {
+    if (typeof define === 'function' && define.amd) {
+      // This handles AMD-style loading, eg Require.js
+      // Register as an anonymous module.
+      define(factory);
+    } else if (module && typeof module.exports === 'object') {
+      // Node. Does not work with strict CommonJS, but
+      // only CommonJS-like enviroments that support module.exports,
+      // like Node.
+      module.exports = factory();
+    } else {
+      root.Markdown.Extra = factory();
+    }
+  }
 
+  function exports() { return Markdown_Extra; };
+  universalExporting(root, exports);
+
+})(this);
