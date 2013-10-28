@@ -1,0 +1,25 @@
+{
+  "name": "pagedown-extra",
+  "version": "0.0.0",
+  "description": "Pagedown plugins to enable support for Markdown Extra syntax.",
+  "main": "Markdown.Extra.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ncraike/pagedown-extra.git"
+  },
+  "keywords": [
+    "pagedown",
+    "markdown"
+  ],
+  "contributors": [
+    "Justin McManus (https://github.com/jmcmanus)",
+    "Nathan Craike <ncraike@gmail.com> (https://github.com/ncraike)"
+  ],
+  "license": "See LICENSE.txt",
+  "bugs": {
+    "url": "https://github.com/ncraike/pagedown-extra/issues"
+  }
+}
